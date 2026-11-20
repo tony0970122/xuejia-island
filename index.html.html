@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>學甲地方創生島｜探索地方資源與發展課題</title>
+<style>
+:root{--ink:#27343a;--cream:#f4f0e6;--card:#fffdf8;--muted:#68787b;--teal:#78b7b6;--line:#dce4df;--accent:#d28b5e}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--cream);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink)}#scene{position:fixed;inset:0}canvas{display:block}.topbar{position:fixed;top:18px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;pointer-events:none;z-index:5}.brand{pointer-events:auto;background:#fffdf4e8;border:1px solid #dfe5dc;border-radius:18px;padding:12px 16px;box-shadow:0 6px 24px #4a5d5a13}.brand small{display:block;letter-spacing:.14em;color:#71827c;font-size:10px}.brand strong{font-size:18px;letter-spacing:.04em}.toolbar{pointer-events:auto;display:flex;gap:8px}.btn{border:1px solid #d4dfd9;background:#fffdf4e8;color:#334348;border-radius:12px;padding:10px 13px;font:inherit;cursor:pointer}.btn:hover,.btn.active{background:#dcece5;border-color:#94b7a8}.panel{position:fixed;z-index:5;background:#fffdf4f2;border:1px solid #dce4df;border-radius:18px;box-shadow:0 12px 32px #334d4a16}.left{top:92px;left:20px;width:280px;max-height:calc(100vh - 115px);overflow:auto;padding:15px}.right{top:92px;right:20px;width:280px;max-height:calc(100vh - 115px);overflow:auto;padding:15px}.panel h3{margin:0 0 10px;font-size:15px;letter-spacing:.04em}.panel p{margin:0;color:#607176;font-size:13px;line-height:1.75}.search{width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:#fff;font:inherit;margin:4px 0 10px}.listitem{padding:10px;border-radius:12px;cursor:pointer;margin:4px 0;border:1px solid transparent}.listitem:hover{background:#edf4ef;border-color:#d7e4db}.listitem strong{font-size:13px;display:block}.listitem span{font-size:11px;color:#758286}.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.pill{border:1px solid #d7e1dc;border-radius:99px;padding:4px 8px;font-size:11px;color:#637277}.info{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:6;width:min(680px,calc(100vw - 32px));background:#fffdf5f4;border:1px solid #dce4df;border-radius:20px;box-shadow:0 14px 40px #344d4a1a;padding:18px 20px;display:none;max-height:45vh;overflow:auto}.info.open{display:block}.infohead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.info h2{font-size:20px;margin:0 0 5px}.info .summary{font-size:13px;color:#637277;line-height:1.7;margin-bottom:10px}.detailgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}.detail{border:1px solid #e2e8e1;border-radius:12px;padding:10px;background:#fff}.detail b{font-size:13px;display:block;margin-bottom:3px}.detail p{font-size:12px;color:#68787b;line-height:1.6;margin:0}.close{border:0;background:#e9efea;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:18px}.foot{position:fixed;bottom:10px;left:20px;font-size:10px;color:#71817c;z-index:4;pointer-events:none}.loading{position:fixed;inset:0;display:grid;place-items:center;color:#50686b;font-size:14px;z-index:3;pointer-events:none}.hide{display:none!important}
+@media(max-width:800px){.topbar{top:10px;left:10px;right:10px}.brand{padding:9px 12px}.brand strong{font-size:15px}.toolbar .btn{padding:8px 10px;font-size:12px}.left{left:10px;top:auto;bottom:10px;width:calc(50% - 16px);max-height:34vh;padding:10px}.right{right:10px;top:auto;bottom:10px;width:calc(50% - 16px);max-height:34vh;padding:10px}.panel h3{font-size:13px}.panel p{font-size:11px}.info{bottom:10px;max-height:55vh}.foot{display:none}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/"}}</script>
+</head><body>
+<div id="scene"></div><div class="loading" id="loading">正在載入學甲地方創生島…</div>
+<header class="topbar"><div class="brand"><small>LOCAL REGENERATION · TAINAN</small><strong>學甲地方創生島</strong></div><div class="toolbar"><button class="btn" id="overview">全景</button><button class="btn" id="linktoggle">關係連線</button><button class="btn" id="help">操作說明</button></div></header>
+<section class="panel left"><h3>探索主題</h3><p>點選島嶼或清單，探索學甲的發展課題與地方資源。</p><div id="islandlist"></div></section>
+<section class="panel right"><h3>資料搜尋</h3><input id="search" class="search" placeholder="搜尋人口、虱目魚、文化…"><div id="itemlist"></div><div class="legend"><span class="pill">直接關聯</span><span class="pill">間接關聯</span><span class="pill">發展構想</span></div></section>
+<section class="info" id="info"><div class="infohead"><div><h2 id="title"></h2><div id="summary" class="summary"></div></div><button class="close" id="close">×</button></div><div class="detailgrid" id="details"></div></section>
+<div class="foot">資料依使用者提供之學甲地方創生報告整理｜可拖曳旋轉、滾輪縮放、點選島嶼查看資訊</div>
+<script type="module">
+import * as THREE from 'three'; import {OrbitControls} from 'three/addons/controls/OrbitControls.js'; import {CSS2DRenderer,CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+const islands=[
+{id:'people',no:'01',name:'人口與社會',summary:'人口減少、老化與青年外流，構成學甲長期發展的結構性課題。',color:'#d99a76',q:0,r:0,items:[['自然減少','近一年出生約74人、死亡約318人；自然增加持續負成長。'],['社會增加','近一年遷入671人、遷出579人，呈小幅淨遷入，但規模不足以抵銷自然減少。'],['人口老化','老化指數約291；65歲以上人口占比約24.5%，未成年人口占比約10.4%。'],['青年外流','就業與生活機能吸引力不足，外移方向以高雄市等都會區為主。'],['人口策略','完善生活機能、育兒支持與就業條件，增加留鄉及移入誘因。']]},
+{id:'industry',no:'02',name:'產業轉型',summary:'從農漁集散、紡織製造到農漁加工，學甲正面臨產業升級與價值重塑。',color:'#e0bd73',q:1,r:0,items:[['農漁集散','早期以旱作、養殖與農漁產品集散為區域經濟基礎。'],['紡織興起','戰後紡織業帶動人口成長，設籍人口曾達約3.5萬人。'],['製造外移','1980年代後紡織業外移，產業萎縮帶來就業減少與人口流失。'],['食品加工','發展分切、真空包裝、加工與外銷，提升農漁產品附加價值。'],['品牌與市場','透過品牌化、產地故事與市場拓展，尋求產業轉型。']]},
+{id:'ecology',no:'03',name:'生態環境',summary:'濕地、候鳥、紅樹林與沿海地景，是學甲兼具保育與環境教育的自然底蘊。',color:'#8db7a4',q:0,r:1,items:[['濕地生態','位於急水溪與將軍溪之間，具濕地、紅樹林與底棲生物資源。'],['候鳥棲地','黑面琵鷺等候鳥停留，具生態觀察與科普教育潛力。'],['綠色慢遊','糖鐵自行車道可串聯聚落與景點，發展低碳遊程。'],['環境風險','低窪地勢、淹水、極端氣候與水資源不穩定，影響生活與產業。'],['保育發展','以環境解說、友善旅遊與生態監測兼顧保育與地方收益。']]},
+{id:'culture',no:'04',name:'文化信仰',summary:'慈濟宮、交趾陶、剪黏、上白礁祭典與民俗社群，構成地方文化識別。',color:'#c99cb2',q:-1,r:1,items:[['慈濟宮','國定古蹟級信仰中心，收藏葉王交趾陶與何金龍剪黏等文化作品。'],['上白礁暨刈香','祭典、陣頭與藝閣展現地方信仰、組織及社群凝聚力。'],['交趾陶工藝','傳統工藝作品可延伸數位典藏、導覽、教育及創意商品。'],['鴿鳥揹笭','農閒競技與傳統社群文化，可作為文化體驗與地方故事素材。'],['文化轉譯','將文化資產轉為可理解、可參與、可持續傳承的體驗。']]},
+{id:'food',no:'05',name:'農漁與食物',summary:'虱目魚、魚塭、特色農作與飲食文化，是學甲最具辨識度的產業資源。',color:'#83a8c1',q:0,r:-1,items:[['虱目魚產業','淡水魚塭約1,500公頃，虱目魚養殖約417公頃，具產地代表性。'],['特色農作','高粱、玉米、蔥頭、洋香瓜、西瓜、小番茄與小麥等農產。'],['契作高粱','與金門酒廠契作高粱約800公頃，形成重要農業生產規模。'],['養殖加工','分切、真空包裝、食品加工及外銷，讓漁產品延伸更多價值。'],['食農教育','從魚塭、農田到餐桌，開發料理體驗、產地導覽與特色伴手禮。']]},
+{id:'tourism',no:'06',name:'觀光休閒',summary:'季節花景、藝術村、動物園、濕地與自行車道，具整合成多元旅遊路線的潛力。',color:'#c9a86f',q:-1,r:0,items:[['蜀葵花文化節','春季花景活動帶來季節性遊客與地方曝光。'],['老塘湖藝術村','古建材與藝術創作構成特色觀光及攝影場域。'],['頑皮世界','大型半開放式動物園，具有親子旅遊客源吸引力。'],['糖鐵自行車道','舊線跡轉化為慢遊廊道，可串聯聚落、景點與自然環境。'],['遊程整合','目前景點分散、接駁與導覽不足，可規劃一日或半日多主題路線。']]},
+{id:'regeneration',no:'07',name:'創生實踐',summary:'以文化轉譯、數位觀光、青年留鄉與體驗教育，將既有資源轉化為持續運作的地方價值。',color:'#a6a0c6',q:1,r:-1,items:[['平安宴創新','將地方特產與飲食文化融入料理，轉化為文化體驗與產業內容。'],['維基小鎮','建置維基條目、Google商家、QR Code、地景圖庫與觀光指標。'],['鼎農村基地','青年返鄉活化三合院，打造自然體驗、交流與教育場域。'],['青年創業','結合在地生活、傳統文化與社區冒險體驗，發展農村教育品牌。'],['創生課題','從補助型活動逐步建立自主營收、合作網絡與長期經營模式。']]},
+{id:'swot',no:'08',name:'SWOT策略',summary:'整合地方優勢、限制、機會與外部威脅，轉化為可執行的創生方向。',color:'#9aaf8c',q:1,r:1,items:[['優勢 S','文化資產、農漁產業、季節景點、人情凝聚與地方認同。'],['劣勢 W','人口老化、青年外流、交通不便、景點分散、行銷弱與資金依賴。'],['機會 O','慢活生態旅遊、食農教育、品牌建立、產學合作、青銀共創。'],['威脅 T','周邊觀光競爭、極端天氣、水資源與地層下陷、留才困難。'],['策略方向','串聯文化與產業、打造慢遊路線、數位行銷、青年參與及環境韌性。']]}
+];
+const links=[['people','industry','產業萎縮與就業減少，加深青年外流','strong'],['industry','food','農漁生產可延伸加工與品牌價值','strong'],['food','tourism','產地體驗與地方飲食，形成食農遊程','strong'],['ecology','tourism','濕地與自行車道支撐生態慢旅','strong'],['culture','tourism','信仰祭典與工藝文化帶動文化觀光','strong'],['culture','regeneration','文化典藏與轉譯可發展教育及創業','strong'],['people','regeneration','青年參與與生活機能影響留鄉可能','weak'],['industry','regeneration','產業升級需要創新、合作與人才','strong'],['ecology','food','水資源與氣候變化直接影響農漁生產','strong'],['tourism','regeneration','景點串聯、導覽與數位行銷可提高停留','idea'],['swot','people','留才、育兒與生活機能是人口策略','idea'],['swot','industry','品牌化、加工與跨域合作是產業轉型方向','idea'],['swot','ecology','環境韌性與保育應納入長期發展','idea']];
+const scene=new THREE.Scene();scene.background=new THREE.Color('#e8f0e9');scene.fog=new THREE.Fog('#e8f0e9',36,78);
+const camera=new THREE.PerspectiveCamera(35,innerWidth/innerHeight,.1,200);camera.position.set(16,25,34);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;document.getElementById('scene').appendChild(renderer.domElement);
+const labels=new CSS2DRenderer();labels.setSize(innerWidth,innerHeight);labels.domElement.style.cssText='position:absolute;inset:0;pointer-events:none';document.getElementById('scene').appendChild(labels.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minPolarAngle=.35;controls.maxPolarAngle=1.25;
+scene.add(new THREE.HemisphereLight(0xf6fbff,0x87938b,1.7));const sun=new THREE.DirectionalLight(0xfff2dc,2.5);sun.position.set(-8,18,12);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+// 海洋底景：深淺藍綠海面、環形波紋與零星浪花，讓島嶼明確呈現海上群島感
+const water=new THREE.Mesh(new THREE.CircleGeometry(70,128),new THREE.MeshStandardMaterial({color:'#78bfc4',roughness:.48,metalness:.04}));
+water.rotation.x=-Math.PI/2;water.position.y=-.72;water.receiveShadow=true;scene.add(water);
+const waveMat=new THREE.MeshBasicMaterial({color:'#d7f0e8',transparent:true,opacity:.42,side:THREE.DoubleSide});
+for(let i=0;i<34;i++){const rr=10+(i%9)*3.7+(Math.floor(i/9))*1.8;const arc=new THREE.Mesh(new THREE.TorusGeometry(rr,.025,4,160,Math.PI*(.48+(i%4)*.12)),waveMat);arc.rotation.x=Math.PI/2;arc.rotation.z=i*2.17;arc.position.set(Math.sin(i*8.2)*2,-.66,Math.cos(i*5.7)*2);scene.add(arc)}
+const foamMat=new THREE.MeshStandardMaterial({color:'#e9f5e9',roughness:1});
+for(let i=0;i<95;i++){const a=i*2.399,r=14+(i%13)*2.6;const foam=new THREE.Mesh(new THREE.SphereGeometry(.045+(i%3)*.025,6,5),foamMat);foam.scale.set(1.8,.25,1);foam.position.set(Math.cos(a)*r,-.65,Math.sin(a)*r);scene.add(foam)}
+const positions={};const clickables=[];const radius=2.45,gap=2.6;
+function hexpos(q,r){return new THREE.Vector3(Math.sqrt(3)*gap*(q+r/2),0,1.5*gap*r)}
+function makeLabel(text){const d=document.createElement('div');d.className='label';d.textContent=text;d.style.cssText='padding:5px 10px;border-radius:999px;background:#fffaf0e8;color:#35454a;font-size:12px;font-weight:700;box-shadow:0 3px 9px #3c50441b;white-space:nowrap';return new CSS2DObject(d)}
+function tree(g,x,z,scale=1){let trunk=new THREE.Mesh(new THREE.CylinderGeometry(.07*scale,.11*scale,.48*scale,5),new THREE.MeshStandardMaterial({color:'#8a7057'}));trunk.position.set(x,.42*scale,z);let crown=new THREE.Mesh(new THREE.IcosahedronGeometry(.38*scale,0),new THREE.MeshStandardMaterial({color:'#719d79',flatShading:true}));crown.position.set(x,.78*scale,z);g.add(trunk,crown)}
+function box(g,x,y,z,w,h,d,color,rot=0){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,flatShading:true}));m.position.set(x,y,z);m.rotation.y=rot;m.castShadow=true;g.add(m);return m}
+function roof(g,x,y,z,w,d,color='#b85f45'){const m=new THREE.Mesh(new THREE.ConeGeometry(w*.78,.55,4),new THREE.MeshStandardMaterial({color,flatShading:true}));m.position.set(x,y,z);m.scale.set(1,.72,d/w);m.rotation.y=Math.PI/4;g.add(m);return m}
+function temple(g,x=0,z=0,scale=1){
+  box(g,x,.82*scale,z,.95*scale,.78*scale,.8*scale,'#f0d9b5');
+  box(g,x,.48*scale,z,.12*scale,.95*scale,1.0*scale,'#a94f3e');
+  roof(g,x,1.42*scale,z,1.45*scale,1.25*scale,'#bd5540');
+  // temple eaves and colorful ridge ornaments
+  const eave=box(g,x,1.18*scale,z,1.65*scale,.10*scale,1.4*scale,'#e3a65e');eave.rotation.y=Math.PI/4;
+  for(let i=-1;i<=1;i+=2){const pillar=new THREE.Mesh(new THREE.CylinderGeometry(.055*scale,.055*scale,.85*scale,7),new THREE.MeshStandardMaterial({color:'#a64f3f'}));pillar.position.set(x+i*.43*scale,.85*scale,z+.42*scale);g.add(pillar)}
+  for(let i=0;i<3;i++){const orb=new THREE.Mesh(new THREE.SphereGeometry(.09*scale,7,6),new THREE.MeshStandardMaterial({color:['#d9a84d','#5f9e91','#d36c54'][i]}));orb.position.set(x+(i-1)*.3*scale,1.65*scale,z);g.add(orb)}
+}
+function farmhouse(g,x,z,scale=1){
+  box(g,x,.78*scale,z,1.05*scale,.72*scale,.8*scale,'#e8d5b5');
+  box(g,x,.55*scale,z+.42*scale,.28*scale,.4*scale,.04*scale,'#855e48');
+  roof(g,x,1.38*scale,z,1.45*scale,1.15*scale,'#9b5944');
+  const wing=box(g,x+.72*scale,.66*scale,z,.55*scale,.55*scale,.65*scale,'#d9c49e');
+  roof(g,x+.72*scale,1.08*scale,z,.8*scale,.85*scale,'#a9684b');
+}
+function flower(g,x,z,color='#d86b9b',scale=1){
+  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.018,.025,.48*scale,5),new THREE.MeshStandardMaterial({color:'#54865d'}));stem.position.set(x,.65*scale,z);g.add(stem);
+  const bloom=new THREE.Mesh(new THREE.IcosahedronGeometry(.16*scale,1),new THREE.MeshStandardMaterial({color,flatShading:true}));bloom.position.set(x, .93*scale,z);g.add(bloom);
+}
+function fish(g,x,z){
+  const body=new THREE.Mesh(new THREE.SphereGeometry(.19,8,6),new THREE.MeshStandardMaterial({color:'#c6d6d1'}));body.scale.set(1.55,.55,.7);body.position.set(x,.66,z);g.add(body);
+  const tail=new THREE.Mesh(new THREE.ConeGeometry(.12,.25,3),new THREE.MeshStandardMaterial({color:'#d49b62'}));tail.position.set(x-.31,.66,z);tail.rotation.z=Math.PI/2;g.add(tail);
+}
+function pond(g,x,z,w=1.15,d=.78){
+  const p=new THREE.Mesh(new THREE.BoxGeometry(w,.055,d),new THREE.MeshStandardMaterial({color:'#63aeb6',roughness:.32}));p.position.set(x,.47,z);g.add(p);
+  for(let i=0;i<3;i++){const line=new THREE.Mesh(new THREE.BoxGeometry(w*.8,.018,.018),new THREE.MeshBasicMaterial({color:'#c7e8df'}));line.position.set(x,.51,z-.2+i*.2);g.add(line)}
+}
+function railway(g,x1,z1,x2,z2){
+ const dx=x2-x1,dz=z2-z1,len=Math.hypot(dx,dz),ang=Math.atan2(dx,dz);
+ for(let i=0;i<13;i++){const t=i/12,x=x1+dx*t,z=z1+dz*t;const sleeper=box(g,x,.49,z,.48,.045,.10,'#866e58',ang);sleeper.rotation.y=ang; }
+ for(const off of [-.13,.13]){const rail=new THREE.Mesh(new THREE.BoxGeometry(.045,.055,len),new THREE.MeshStandardMaterial({color:'#606e70'}));rail.position.set((x1+x2)/2,.54,(z1+z2)/2+off);rail.rotation.y=ang;g.add(rail)}
+}
+function bird(g,x,y,z){const shape=new THREE.Mesh(new THREE.ConeGeometry(.11,.48,5),new THREE.MeshStandardMaterial({color:'#f5f0e2'}));shape.position.set(x,y,z);shape.rotation.z=Math.PI/2;g.add(shape);const wing=box(g,x,y+.04,z,.36,.035,.12,'#454d4b');wing.rotation.z=-.25}
+for(const isl of islands){
+ const g=new THREE.Group();g.position.copy(hexpos(isl.q,isl.r));positions[isl.id]=g.position.clone();
+ // 每座島有海岸沙灘、草地平台與六角地形層次
+ const sand=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,.72,6),new THREE.MeshStandardMaterial({color:'#d8c99e',flatShading:true,roughness:1}));sand.rotation.y=Math.PI/6;sand.position.y=0;sand.receiveShadow=true;sand.castShadow=true;g.add(sand);
+ const base=new THREE.Mesh(new THREE.CylinderGeometry(radius-.12,radius-.12,.20,6),new THREE.MeshStandardMaterial({color:'#9dbb91',flatShading:true,roughness:1}));base.rotation.y=Math.PI/6;base.position.y=.42;base.receiveShadow=true;g.add(base);
+ const rim=new THREE.Mesh(new THREE.CylinderGeometry(radius+.015,radius+.015,.10,6),new THREE.MeshStandardMaterial({color:'#f1e4c5',flatShading:true}));rim.rotation.y=Math.PI/6;rim.position.y=.34;g.add(rim);
+ // island-specific recognizable landmarks
+ if(isl.id==='culture'){
+   temple(g,-.05,.0,1.0);tree(g,-1.55,-1.25,.85);tree(g,1.55,-1.15,.8);
+   // small incense burner / stone lantern
+   const burner=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.28,7),new THREE.MeshStandardMaterial({color:'#9b9b89'}));burner.position.set(.95,.62,.75);g.add(burner);
+ }else if(isl.id==='food'){
+   pond(g,-.82,-.65,1.25,.85);pond(g,.65,-.65,1.15,.82);pond(g,-.05,.72,1.55,.82);fish(g,-.8,-.65);fish(g,.65,-.65);
+   // farm produce rows
+   for(let i=0;i<5;i++){const crop=box(g,-1.55+i*.22,.57,1.65,.10,.18,.24,i%2?'#5b9864':'#88a85d');}
+ }else if(isl.id==='tourism'){
+   // distinctive sunflower/mallow field
+   for(let row=0;row<3;row++)for(let col=0;col<4;col++)flower(g,-1.15+col*.43,-1.35+row*.42,['#d85c91','#e4a04e','#c96b9d'][((row+col)%3)],.78);
+   railway(g,-1.5,.75,1.25,.75);
+   // little cycle path and bicycle wheels
+   const path=new THREE.Mesh(new THREE.TorusGeometry(.58,.055,5,40),new THREE.MeshStandardMaterial({color:'#e6d7b8'}));path.rotation.x=Math.PI/2;path.position.set(.15,.54,.05);g.add(path);
+   tree(g,1.65,-1.1,.8);
+ }else if(isl.id==='regeneration'){
+   farmhouse(g,-.25,-.1,1);tree(g,-1.55,1.0,.9);tree(g,1.45,1.05,.8);
+   // courtyard table
+   const table=box(g,.95,.67,-.1,.55,.08,.42,'#9c7657');const leg=box(g,.95,.48,-.1,.08,.32,.08,'#86684d');
+ }else if(isl.id==='ecology'){
+   // wetland pools, mangroves and migratory birds
+   pond(g,-.75,-.45,1.65,1.05);pond(g,.8,.45,1.25,.85);
+   for(let i=0;i<5;i++)tree(g,-1.55+i*.7,1.45-(i%2)*.22,.8);
+   bird(g,-.5,1.5,-.9);bird(g,.35,1.7,-.65);bird(g,.9,1.45,-.9);
+   for(let i=0;i<5;i++){const reed=box(g,-1.5+i*.55,.72,-1.75,.035,.5,.035,'#829b65');}
+ }else if(isl.id==='industry'){
+   // former textile factory / food processing workshop
+   box(g,-.25,.88,-.05,1.35,.95,.95,'#d5b58b');const roof1=box(g,-.25,1.4,-.05,1.48,.12,1.08,'#9d6550');
+   for(let i=0;i<3;i++){const chimney=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,.85,7),new THREE.MeshStandardMaterial({color:'#a86d58'}));chimney.position.set(-.72+i*.48,1.85,-.25);g.add(chimney)}
+   for(let i=0;i<4;i++)box(g,.85,.58,-1.25+i*.35,.18,.24,.18,'#c3a66c');
+ }else if(isl.id==='people'){
+   // compact township street and houses
+   for(let i=0;i<4;i++){const x=-1.15+(i%2)*1.35,z=-.85+Math.floor(i/2)*1.45;box(g,x,.72,z,.72,.62,.62,'#ead9bc');roof(g,x,1.18,z,.95,.9,i%2?'#a65d49':'#bd7655')}
+   tree(g,1.55,1.25,.8);
+ }else{
+   // SWOT strategy island: civic plaza and connected community buildings
+   farmhouse(g,-.55,-.1,.85);temple(g,.95,-.15,.65);tree(g,-1.5,1.1,.8);
+ }
+ // small coastal palms / rocks around each island
+ for(let i=0;i<6;i++){const a=i*Math.PI/3+.2,x=Math.cos(a)*2.12,z=Math.sin(a)*2.12;const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.12,0),new THREE.MeshStandardMaterial({color:'#b5aa91',flatShading:true}));rock.position.set(x,.48,z);g.add(rock)}
+ const hit=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,.9,6),new THREE.MeshBasicMaterial({visible:false}));hit.rotation.y=Math.PI/6;hit.position.y=.45;hit.userData=isl;g.add(hit);clickables.push(hit);
+ g.add(makeLabel(isl.no+' '+isl.name));scene.add(g);
+}
+const lineGroup=new THREE.Group();scene.add(lineGroup);let lineObjects=[];function drawLinks(){lineGroup.clear();lineObjects=[];for(const [from,to,label,type] of links){const a=positions[from],b=positions[to];const curve=new THREE.QuadraticBezierCurve3(new THREE.Vector3(a.x,.55,a.z),new THREE.Vector3((a.x+b.x)/2,2.3,(a.z+b.z)/2),new THREE.Vector3(b.x,.55,b.z));const pts=curve.getPoints(36);const geo=new THREE.BufferGeometry().setFromPoints(pts);const mat=new THREE.LineDashedMaterial({color:type==='idea'?'#b98661':type==='weak'?'#9c9ebd':'#6f9f9b',dashSize:.5,gapSize:.25,transparent:true,opacity:.85});const line=new THREE.Line(geo,mat);line.computeLineDistances();line.userData={from,to,label,type};lineGroup.add(line);lineObjects.push(line)}}drawLinks();lineGroup.visible=false;
+function openInfo(isl){document.getElementById('title').textContent=isl.no+'｜'+isl.name;document.getElementById('summary').textContent=isl.summary;const d=document.getElementById('details');d.innerHTML='';isl.items.forEach(([name,desc])=>{const div=document.createElement('div');div.className='detail';const b=document.createElement('b');b.textContent=name;const p=document.createElement('p');p.textContent=desc;div.append(b,p);d.append(div)});document.getElementById('info').classList.add('open');controls.target.copy(positions[isl.id]);}
+const ray=new THREE.Raycaster(),pointer=new THREE.Vector2();let down=null;renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);renderer.domElement.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>7)return;pointer.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(pointer,camera);const hit=ray.intersectObjects(clickables)[0];if(hit)openInfo(hit.object.userData)});
+const islandlist=document.getElementById('islandlist');islands.forEach(isl=>{const el=document.createElement('div');el.className='listitem';el.innerHTML=`<strong>${isl.no} ${isl.name}</strong><span>${isl.items.length} 個議題</span>`;el.onclick=()=>openInfo(isl);islandlist.append(el)});
+const itemlist=document.getElementById('itemlist');function renderItems(query=''){itemlist.innerHTML='';const q=query.trim().toLowerCase();islands.forEach(isl=>isl.items.forEach(([name,desc])=>{if(q&&!(`${isl.name} ${name} ${desc}`.toLowerCase().includes(q)))return;const el=document.createElement('div');el.className='listitem';el.innerHTML=`<strong>${name}</strong><span>${isl.name}</span>`;el.onclick=()=>openInfo(isl);itemlist.append(el)}))}renderItems();document.getElementById('search').addEventListener('input',e=>renderItems(e.target.value));
+document.getElementById('overview').onclick=()=>{controls.target.set(0,0,0);camera.position.set(16,25,34)};document.getElementById('linktoggle').onclick=e=>{lineGroup.visible=!lineGroup.visible;e.target.classList.toggle('active',lineGroup.visible);e.target.textContent=lineGroup.visible?'隱藏連線':'關係連線'};document.getElementById('help').onclick=()=>alert('操作方式：拖曳旋轉視角、滾輪縮放；點擊島嶼或左側分類查看內容；右側搜尋關鍵字；按「關係連線」查看創生議題間的關聯。');document.getElementById('close').onclick=()=>document.getElementById('info').classList.remove('open');
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);labels.setSize(innerWidth,innerHeight)});renderer.setAnimationLoop(()=>{controls.update();renderer.render(scene,camera);labels.render(scene,camera)});document.getElementById('loading').classList.add('hide');
+</script></body></html>
